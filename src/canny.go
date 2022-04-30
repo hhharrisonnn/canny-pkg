@@ -8,7 +8,7 @@ import (
 	"os/user"
 )
 
-func Canny(fi string) {
+func Canny(fi string, sigma float64, highThresholdRatio float64, lowThresholdRatio float64) {
 	inputImg, err := os.Open(fi)
 	if err != nil {
 		fmt.Printf("Failed to open %s: %s", fi, err)
@@ -22,10 +22,10 @@ func Canny(fi string) {
 	}
 
 	greyscaleImg := Greyscale(img)
-	gaussianImg := Gaussian(greyscaleImg, 1)
+	gaussianImg := Gaussian(greyscaleImg, sigma)
 	sobelImg, theta := Sobel(gaussianImg)
 	nonMaxImg := NonMaxSuppression(sobelImg, theta)
-	doubleThresholdImg := DoubleThreshold(nonMaxImg, 0.5, 0.3)
+	doubleThresholdImg := DoubleThreshold(nonMaxImg, highThresholdRatio, lowThresholdRatio)
 	hysteresis := Hysteresis(doubleThresholdImg)
 
 	userPath, _ := user.Current()
